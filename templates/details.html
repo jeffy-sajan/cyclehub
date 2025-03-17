@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Product Detail</title>
+    <!-- Bootstrap 4 CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .breadcrumb {
+            background-color: transparent;
+            margin-bottom: 20px;
+        }
+        .product-section {
+            background-color: #f44336;
+            color: white;
+            padding: 50px;
+            border-radius: 10px;
+        }
+        .product-image {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .product-title {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .product-author {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .product-price {
+            font-size: 30px;
+            font-weight: bold;
+        }
+        .star-rating {
+            color: #ffd700;
+            font-size: 18px;
+        }
+        .review-count {
+            font-size: 14px;
+            color: #ddd;
+        }
+        .btn-add-cart, .btn-share {
+            border-radius: 50px;
+            font-size: 16px;
+            padding: 10px 30px;
+            color: #333;
+        }
+        .btn-add-cart {
+            background-color: white;
+            color: #333;
+            font-weight: bold;
+            border: 2px solid #ffffff;
+            transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+        }
+        
+        .btn-add-cart:hover {
+            background-color: #333; /* Darker background on hover */
+            color: white;           /* White text on hover */
+            border-color: #333;     /* Border color matches background on hover */
+        }
+        .btn-share {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            margin-left: 10px;
+        }
+        .product-section {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fff;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'cycle:home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Product Details</li>
+            </ol>
+        </nav>
+    
+        <!-- Product Section -->
+        <div class="product-section row align-items-center shadow p-4 bg-info rounded">
+            <div class="col-md-6">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+            </div>
+            <div class="col-md-6">
+                <h2 class="product-title">{{ product.name }}</h2>
+                <p class="product-author">{{ product.description }}</p>
+                <p class="product-price">₹{{ product.price }}</p>
+                <p>
+                    <span class="star-rating">★★★★☆</span>
+                    <span class="review-count">({{ product.review_count }} Reviews)</span>
+                </p>
+                <p>
+                    <strong>Available Stock:</strong> 
+                    {% if product.stock > 0 %}
+                        {{ product.stock }}
+                    {% else %}
+                        <span class="text-danger">Out of Stock</span>
+                    {% endif %}
+                </p>
+                <div class="mt-4">
+                    {% if product.stock > 0 %}
+                        <!-- Button enabled if stock is available -->
+                        <a href="{% url 'cart:add_to_cart' product.id %}" class="btn btn-add-cart">Add To Cart</a>
+                    {% else %}
+                        <!-- Disabled button if stock is 0 -->
+                        <button class="btn btn-add-cart" disabled>Out of Stock</button>
+                    {% endif %}
+                    <button class="btn btn-share" onclick="shareProduct()">Share</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+
+<!-- Bootstrap 4 JavaScript and dependencies -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- Add this script inside the <head> tag or before the closing </body> tag -->
+<script>
+    function shareProduct() {
+        const url = window.location.href;  // Gets the current URL
+        if (navigator.share) {
+            // Use Web Share API if available
+            navigator.share({
+                title: document.title,
+                text: 'Check out this product on CycleHub!',
+                url: url
+            }).catch((error) => console.log('Sharing failed', error));
+        } else {
+            // Fallback for browsers that don't support Web Share API
+            prompt("Copy this link to share:", url);
+        }
+    }
+</script>
+
+</body>
+</html>
+
+{% endblock %}

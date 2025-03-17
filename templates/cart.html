@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <!-- Bootstrap 4 CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #a18cd1, #fbc2eb); /* Gradient background */
+            font-family: Arial, sans-serif;
+        }
+        .cart-container {
+            padding: 40px 0;
+            color: #333;
+        }
+        .cart-title {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #444;
+        }
+        .product-details, .order-summary {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .product-image {
+            width: 80px;
+            height: auto;
+            border-radius: 5px;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            color: #333;
+        }
+        .quantity-controls a {
+            color: #6c63ff; /* Match theme color */
+            font-size: 24px;
+            padding: 0 10px;
+        }
+        .quantity-controls a:hover {
+            color: #5a55e1;
+        }
+        .btn-apply {
+            background-color: #ff4b5c;
+            color: white;
+            border: none;
+            padding: 8px;
+            width: 100%;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-apply:hover {
+            background-color: #e64350;
+        }
+        .btn-checkout {
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        .btn-checkout:hover {
+            background-color: #5a55e1;
+        }
+        .order-summary h5 {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #444;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .summary-item input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .total-cost {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        .text-danger {
+            color: #ff4b5c;
+            font-weight: bold;
+        }
+        .text-success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .btn-checkout:disabled {
+            background-color: #ddd;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .continue-shopping {
+            color: #6c63ff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .continue-shopping:hover {
+            color: #5a55e1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="alert-container">
+        {% for message in messages %}
+            {% if 'cart_error' in message.tags %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+
+    <div class="container cart-container">
+        <div class="row">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                <h2 class="cart-title">Shopping Cart ({{ cart_items.count }} Items)</h2>
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                    <div class="row align-items-center mb-4 product-details">
+                        <div class="col-2">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
+                        </div>
+                        <div class="col-4">
+                            <p><strong>{{ item.product.name }}</strong></p>
+                            <small class="text-muted">{{ item.product.category }}</small>
+                            <a href="{% url 'cart:remove_cart_item' item.id %}" class="text-danger d-block mt-2">Remove</a>
+                        </div>
+                        <div class="col-2 quantity-controls">
+                            <a href="{% url 'cart:update_cart_item' item.id 'decrease' %}" class="text-danger">-</a>
+                            <span>{{ item.quantity }}</span>
+                            <a href="{% url 'cart:update_cart_item' item.id 'increase' %}" 
+                            class="text-success {% if item.quantity == item.product.stock %}disabled{% endif %}">
+                            +
+                         </a>
+                         </div>
+                        <div class="col-2 text-right">₹{{ item.product.price }}</div>
+                        <div class="col-2 text-right">₹{{ item.total_price }}</div>
+                    </div>
+                    {% endfor %}
+                    <a href="{% url 'cycle:home' %}" class="continue-shopping">← Continue Shopping</a>
+                {% else %}
+                    <p>Your cart is empty.</p>
+                {% endif %}
+            </div>
+            
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                    <div class="order-summary">
+                        <h5>Order Summary</h5>
+                        <div class="summary-item">
+                            <span>Items {{ cart_items.count }}</span>
+                            <span>₹{{ total_cost }}</span>
+                        </div>
+
+                        <div class="summary-item total-cost">
+                            <span>Total Cost</span>
+                            <span>₹{{ total_cost }}</span>
+                        </div>
+
+                        {% if cart_items %}
+                            <!-- Enable the button if cart has items -->
+                            <a href="{% url 'cart:checkout' %}">
+                                <button class="btn btn-checkout mt-4">Checkout</button>
+                            </a>
+                        {% else %}
+                            <!-- Disable the button if cart is empty -->
+                            <button class="btn btn-checkout mt-4" disabled>Checkout</button>
+                        {% endif %}
+                    </div>
+                </div>
+
+        </div>
+    </div>
+    
+    <!-- JavaScript dependencies -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    
+    {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Styles for Order Confirmation Page */
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: 60px auto;
+            text-align: center;
+        }
+        h2 {
+            color: #4a15f5;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        .btn-primary {
+            background-color: #4a15f5;
+            border: none;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #cc0099;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Thank you for your order, {{ request.user.username }}!</h2>
+        <p>Your order has been successfully placed. We will process it shortly.</p>
+
+        <a href="{% url 'cycle:home' %}" class="btn btn-primary">Back to Home</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+
+{% endblock %}

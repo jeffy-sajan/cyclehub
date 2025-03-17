@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .checkout-container,
+        .order-summary-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            max-height: 100%;
+        }
+
+        .checkout-container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .order-summary-container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Checkout Content Styles */
+        .checkout-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        section h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .place-order {
+            width: 100%;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .place-order:hover {
+            background-color: #45a049;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .order-summary-container {
+            max-width: 440px;
+            width: 100%;
+            max-height: 440px;
+            background-color: #f9fafb;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+
+        .order-summary-container h2 {
+            font-size: 22px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .order-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .order-summary .item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            color: #555;
+            padding: 10px 0;
+            background-color: #ffffff;
+            border-radius: 5px;
+            padding: 10px 15px;
+            border: 1px solid #eee;
+            align-items: center;
+        }
+
+        .order-summary .item p {
+            margin: 0;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .order-summary .item span {
+            font-weight: 600;
+            color: #4CAF50;
+        }
+
+        .order-summary .total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            padding-top: 15px;
+            border-top: 2px solid #4CAF50;
+            margin-top: 20px;
+            padding-bottom: 5px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Main Checkout Container -->
+<div class="container">
+    <div class="checkout-container">
+        <header>
+            <h1>CHECKOUT</h1>
+        </header>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="checkout-content">
+                <!-- Shipping Information Section -->
+                <section class="shipping-info">
+                    <h2>Shipping Information</h2>
+                    
+                    <label for="address">Address</label>
+                    {% if error_message and "address" in error_message %}
+                        <div class="error-message">{{ error_message }}</div>
+                    {% endif %}
+                    <input type="text" id="address" name="address" value="{{ user_profile.address }}" placeholder="Enter your address">
+        
+                    <label for="pincode">Pincode</label>
+                    {% if error_message and "pincode" in error_message %}
+                        <div class="error-message">{{ error_message }}</div>
+                    {% endif %}
+                    <input type="text" id="pincode" name="pincode" value="{{ user_profile.pincode }}" placeholder="Enter pincode">
+        
+                    <label for="phone-number">Phone Number</label>
+                    {% if error_message and "phone_number" in error_message %}
+                        <div class="error-message">{{ error_message }}</div>
+                    {% endif %}
+                    <input type="text" id="phone-number" name="phone-number" value="{{ user_profile.phone_number }}" placeholder="Enter your phone number">
+                </section>
+        
+                <!-- Payment Options Section -->
+                <section class="payment-info">
+                    <h2>Payment Options</h2>
+                    <label for="payment-method">Select Payment Method</label>
+                    {% if error_message and "payment_method" in error_message %}
+                        <div class="error-message">{{ error_message }}</div>
+                    {% endif %}
+                    <select id="payment-method" name="payment-method">
+                        <option value="upi">UPI</option>
+                        <option value="card">Card Payment</option>
+                    </select>
+                </section>
+        
+                <!-- Place Order Button -->
+                <button type="submit" class="place-order">Place Order</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Order Summary Container -->
+    <aside class="order-summary-container">
+        <h2>Order Summary</h2>
+        <div class="order-summary">
+            {% for item in cart_items %}
+                <div class="item">
+                    <p>{{ item.product.name }}</p>
+                    <span>{{ item.quantity }} x ₹{{ item.product.price }}</span>
+                </div>
+            {% endfor %}
+            <div class="total">
+                <p>Total:</p>
+                <span>₹{{ total_price }}</span>
+            </div>
+        </div>
+    </aside>
+</div>
+
+{% endblock %}
+</body>
+</html>

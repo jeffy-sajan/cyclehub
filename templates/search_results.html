@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="search-container">
+        <h1>Search Results</h1>
+
+        <!-- Search Form -->
+        <form method="get" action="{% url 'cycle:search_products' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="query">{{ form.query.label }}</label>
+                {{ form.query }}
+            </div>
+            <div class="form-group">
+                <label for="category">{{ form.category.label }}</label>
+                {{ form.category }}
+            </div>
+        </form>
+
+        <!-- Search Results -->
+        <h2>Results</h2>
+        <div class="row product-list">
+            {% if products %}
+                {% for product in products %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card">
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">₹{{ product.price }}</p>
+                                <a href="{% url 'cycle:details' product.id %}" class="btn btn-info">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No products found matching your search.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <style>
+        /* Search Container Styling */
+        .search-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 1.8rem;
+            color: #2d3748;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 0px;
+        }
+
+        .form-group label {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 1px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 1px;
+        }
+
+        button {
+            margin-top: 15px;
+            font-size: 1rem;
+            padding: 10px 20px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2b6cb0;
+        }
+
+        /* Product Cards Layout */
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .product-list .card {
+            width: 110%;
+            border: 1px solid #e3e3e3;
+            border-radius: 8px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .product-list .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-list .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .btn-info {
+            background-color: #3182ce;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-info:hover {
+            background-color: #2b6cb0;
+        }
+
+        .mb-4 {
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}

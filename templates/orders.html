@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7fafc;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 2.2em;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: bold;
+            border-bottom: 2px solid #4a5568;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .orders-container {
+            width: 100%;
+            max-width: 1090px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            flex-direction: column;
+            background-color: #edf2f7;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-header span {
+            font-size: 1.1em;
+            color: #4a5568;
+            font-weight: bold;
+        }
+
+        .order-details {
+            color: #2d3748;
+            margin: 10px 0;
+        }
+
+        .product-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .product-list th, .product-list td {
+            text-align: left;
+            padding: 10px;
+        }
+
+        .product-list th {
+            background-color: #3182ce;
+            color: white;
+            font-weight: bold;
+        }
+
+        .product-list tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .product-info img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .cancel-btn, .invoice-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 15px;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .cancel-btn {
+            background-color: #e53e3e;
+        }
+
+        .cancel-btn:hover {
+            background-color: #c53030;
+        }
+
+        .invoice-btn {
+            background-color: #3182ce;
+        }
+
+        .invoice-btn:hover {
+            background-color: #2b6cb0;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .status.pending {
+            color: orange;
+        }
+
+        .status.shipped {
+            color: blue;
+        }
+
+        .status.delivered {
+            color: green;
+        }
+
+        .status.cancelled {
+            color: red;
+        }
+
+        .no-orders {
+            text-align: center;
+            color: #718096;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+
+        /* Ensure buttons are aligned at the bottom of each order item */
+        .order-item .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="orders-container">
+        <h1>Your Orders</h1>
+
+        {% if orders %}
+            {% for order in orders %}
+                <div class="order-item">
+                    <div class="order-header">
+                        <span>{{ order.created_at|date:"M d, Y" }}</span>
+                    </div>
+
+                    <p class="order-details">Status: 
+                        <span class="status {% if order.status == 'Pending' %}pending{% elif order.status == 'Shipped' %}shipped{% elif order.status == 'Delivered' %}delivered{% else %}cancelled{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </p>
+
+                    <table class="product-list">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="product-info">
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                            <span>{{ item.product.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ item.price }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    {% if order.status == 'Pending' %}
+                        <form action="{% url 'cart:cancel_order' order.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="cancel-btn">Cancel Order</button>
+                        </form>
+                    {% endif %}
+
+                    <!-- Invoice Button -->
+                    <div class="buttons">
+                        {% if order.status != 'Cancelled' %}
+                            <a href="{% url 'cart:generate_pdf' order.id %}" class="invoice-btn">Download Invoice</a>
+                        {% else %}
+                            <button class="invoice-btn" disabled>Invoice Unavailable</button>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-orders">You have no orders.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
+{% endblock %}

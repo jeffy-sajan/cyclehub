@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+
+        /* CSS for register.html */
+
+
+        body {
+                  background: linear-gradient(to bottom, #dee6ed, #6f47af);
+                  font-family: Arial, sans-serif;
+              }
+              .register-container {
+                  width: 480px;
+                  margin: 38px auto;
+                  background: white;
+                  padding: 20px;
+                  border-radius: 8px;
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              h1 {
+                  text-align: center;
+                  margin-bottom: 30px;
+                  font-family:sans-serif;
+                  font-size: 22px;
+                  font-weight: bolder;
+                  color: #000000;
+              }
+              .form-label {
+                  display: block;
+                  font-size: 14px;
+                  margin-bottom: 8px;
+                  color: #333;
+              }
+              .form-control {
+                  width: 100%;
+                  padding: 10px;
+                  margin-bottom: 15px;
+                  border: 1px solid #ccc;
+                  border-radius: 4px;
+                  font-size: 14px;
+              }
+              .submit-btn {
+                  width: 100%;
+                  background-color: #4a15f5;
+                  color: white;
+                  padding: 10px;
+                  border: none;
+                  border-radius: 4px;
+                  cursor: pointer;
+              }
+              .submit-btn:hover {
+                  background-color: #cc0099;
+              }
+              .login-link {
+                  text-align: center;
+                  margin-top: 20px;
+                  font-size: 14px;
+              }
+              .login-link a {
+                  text-decoration: none;
+                  color: #ff00cc;
+              }
+        
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>REGISTER</h1>
+        
+        <!-- Display messages if there are any -->
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+                {% if 'register' in message.tags %}
+                    <li style="color: red;">{{ message }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+    
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div>
+                <label class="form-label">Username:</label>
+                <input type="text" class="form-control" name="u" placeholder="Enter the username">
+            </div>
+            <div>
+                <label class="form-label">Password:</label>
+                <input type="password" class="form-control" name="p" placeholder="Enter the password">
+            </div>
+            <div>
+                <label class="form-label">Confirm Password:</label>
+                <input type="password" class="form-control" name="cp" placeholder="Re-enter the password">
+            </div>
+            <div>
+                <label class="form-label">Email:</label>
+                <input type="email" class="form-control" name="e" placeholder="Enter your email address">
+            </div>
+            <div>
+                <button type="submit" class="submit-btn">REGISTER</button>
+            </div>
+            <div class="login-link">
+                Already a member? <a href="{% url 'cycle:login' %}">Login here</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}
