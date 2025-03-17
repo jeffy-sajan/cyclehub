@@ -68,4 +68,4 @@ jobs:
         with:
           app-name: 'cyclehub'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8A693A0F5C33415FB521F3C4A7F1629C }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FB0E436B30764CCE860E3F2481CF901A }}
