@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 attr==0.3.2
 ConfigParser==7.2.0
 cryptography==42.0.8
@@ -37,4 +37,4 @@ django-crispy-forms==2.0
 djangorestframework==3.14.0
 pyodbc
 mssql-django
->>>>>>> fd6a19c3d02844700536a5801e9b35958fe1d743
+
